@@ -22,7 +22,8 @@ class Parser:
         #of the function name in the first list.
         self.symbol_table = [[], []]
         #This is a variable that keeps track of which function is currently
-        #being analysed and allows the parser to efficiently log local variables
+        #being analysed and allows the parser to efficiently log local variables.
+        #It is the index in the symbol table of the current function's table of variables
         self.function_count = -1
 
     def accept(self, token):
