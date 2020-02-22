@@ -239,7 +239,7 @@ class Generator:
         #Creates a pseudo condition node
         condition_node = ET.Element("expression")
         ET.SubElement(condition_node, "localVariable", value = variable)
-        ET.SubElement(condition_node, "operator", value = "==")
+        ET.SubElement(condition_node, "operator", value = ">=")
         ET.SubElement(condition_node, "integer_constant", value = end_value)
         self.compile_expression(condition_node)
         self.generated_assembly += ("pop a", "dec", "jp .L{}".format(final_jump))
