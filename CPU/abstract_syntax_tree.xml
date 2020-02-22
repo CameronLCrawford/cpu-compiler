@@ -1,6 +1,47 @@
 <?xml version="1.0" ?>
 <program>
     <initialStatement value="main"/>
+    <functionDeclaration value="otherFunction">
+        <parameterList>
+            <localVariable value="x"/>
+            <localVariable value="y"/>
+            <localVariable value="z"/>
+        </parameterList>
+        <functionBody>
+            <assignmentStatement>
+                <localVariable value="x"/>
+                <expression>
+                    <localVariable value="z"/>
+                    <operator value="-"/>
+                    <localVariable value="y"/>
+                </expression>
+            </assignmentStatement>
+            <declarationStatement>
+                <localVariable value="w"/>
+            </declarationStatement>
+            <forStatement>
+                <loopControlVariable value="w"/>
+                <startValue value="0"/>
+                <endValue value="5"/>
+                <incrementValue value="2"/>
+                <forBody>
+                    <assignmentStatement>
+                        <localVariable value="x"/>
+                        <expression>
+                            <localVariable value="x"/>
+                            <operator value="+"/>
+                            <integer_constant value="2"/>
+                        </expression>
+                    </assignmentStatement>
+                </forBody>
+            </forStatement>
+            <returnStatement>
+                <expression>
+                    <localVariable value="x"/>
+                </expression>
+            </returnStatement>
+        </functionBody>
+    </functionDeclaration>
     <functionDeclaration value="main">
         <functionBody>
             <declarationStatement>
@@ -20,7 +61,17 @@
                 <expression>
                     <functionCall value="myFunction">
                         <expression>
-                            <localVariable value="x"/>
+                            <functionCall value="otherFunction">
+                                <expression>
+                                    <integer_constant value="2"/>
+                                </expression>
+                                <expression>
+                                    <localVariable value="x"/>
+                                </expression>
+                                <expression>
+                                    <integer_constant value="5"/>
+                                </expression>
+                            </functionCall>
                         </expression>
                         <expression>
                             <localVariable value="y"/>

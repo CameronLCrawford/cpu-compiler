@@ -2,11 +2,22 @@ initial main;
 
 declare myFunction;
 
+function otherFunction (x, y, z)
+{
+	x = z - y;
+	var w;
+	for w = 0 to 5 : 2
+	{
+		x = x + 2;
+	}
+	return x;
+}
+
 function main()
 {
 	var x = 10;
 	var y = 3;
-	var z = myFunction(x,y);
+	var z = myFunction(otherFunction(2, x, 5), y);
 	y = 20;
 	var w;
 	for w = 0 to 10 : 1
