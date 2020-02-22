@@ -12,7 +12,6 @@ class Parser:
         self.line_count = 0
         self.initial_function = ""
         self.pre_declared_functions = []
-        self.function_count = -1
         #The symbol table stores all of the identifiers and the context
         #that specifies what type of identifier they are.
         #The table stores each function's local variables in a new list
@@ -24,6 +23,7 @@ class Parser:
         self.symbol_table = [[], []]
         #This is a variable that keeps track of which function is currently
         #being analysed and allows the parser to efficiently log local variables
+        self.function_count = -1
 
     def accept(self, token):
         self.line_count = self.tokens[self.current_token][-1]
