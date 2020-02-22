@@ -1,0 +1,109 @@
+<?xml version="1.0" ?>
+<program>
+    <initialStatement value="main"/>
+    <functionDeclaration value="main">
+        <functionBody>
+            <declarationStatement>
+                <localVariable value="x"/>
+                <expression>
+                    <integer_constant value="10"/>
+                </expression>
+            </declarationStatement>
+            <declarationStatement>
+                <localVariable value="y"/>
+                <expression>
+                    <integer_constant value="3"/>
+                </expression>
+            </declarationStatement>
+            <declarationStatement>
+                <localVariable value="z"/>
+                <expression>
+                    <functionCall value="myFunction">
+                        <expression>
+                            <localVariable value="x"/>
+                        </expression>
+                        <expression>
+                            <localVariable value="y"/>
+                        </expression>
+                    </functionCall>
+                </expression>
+            </declarationStatement>
+            <assignmentStatement>
+                <localVariable value="y"/>
+                <expression>
+                    <integer_constant value="20"/>
+                </expression>
+            </assignmentStatement>
+            <declarationStatement>
+                <localVariable value="w"/>
+            </declarationStatement>
+            <forStatement>
+                <loopControlVariable value="w"/>
+                <startValue value="0"/>
+                <endValue value="10"/>
+                <incrementValue value="1"/>
+                <forBody>
+                    <outputStatement>
+                        <expression>
+                            <localVariable value="z"/>
+                        </expression>
+                    </outputStatement>
+                </forBody>
+            </forStatement>
+            <returnStatement>
+                <expression>
+                    <integer_constant value="0"/>
+                </expression>
+            </returnStatement>
+        </functionBody>
+    </functionDeclaration>
+    <functionDeclaration value="myFunction">
+        <parameterList>
+            <localVariable value="x"/>
+            <localVariable value="y"/>
+        </parameterList>
+        <functionBody>
+            <ifStatement>
+                <ifCondition>
+                    <expression>
+                        <localVariable value="x"/>
+                        <operator value="&gt;"/>
+                        <integer_constant value="9"/>
+                        <operator value="or"/>
+                        <localVariable value="y"/>
+                        <operator value="&lt;="/>
+                        <integer_constant value="1"/>
+                    </expression>
+                </ifCondition>
+                <ifBody>
+                    <returnStatement>
+                        <expression>
+                            <integer_constant value="1"/>
+                        </expression>
+                    </returnStatement>
+                </ifBody>
+                <elifCondition>
+                    <expression>
+                        <localVariable value="y"/>
+                        <operator value="=="/>
+                        <integer_constant value="2"/>
+                    </expression>
+                </elifCondition>
+                <elifBody>
+                    <returnStatement>
+                        <expression>
+                            <integer_constant value="0"/>
+                        </expression>
+                    </returnStatement>
+                </elifBody>
+                <elseBody>
+                    <returnStatement>
+                        <expression>
+                            <integer_constant value="19"/>
+                        </expression>
+                    </returnStatement>
+                </elseBody>
+            </ifStatement>
+        </functionBody>
+    </functionDeclaration>
+</program>

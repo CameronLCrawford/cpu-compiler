@@ -1,0 +1,30 @@
+initial main;
+
+declare myFunction;
+
+function main()
+{
+	var x = 10;
+	var y = 3;
+	var z = myFunction(x,y);
+	y = 20;
+	var w;
+	for w = 0 to 10 : 1
+	{
+		output(z);
+	}
+	return 0;
+}
+
+function myFunction(x, y)
+{
+	if ( x>9 or y <= 1)
+	{
+		return 1;
+	}
+	elif (y==2)
+	{
+		return 0;
+	}
+	else { return 19;}
+}
