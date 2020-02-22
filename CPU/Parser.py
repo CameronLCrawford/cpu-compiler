@@ -19,13 +19,15 @@ class Parser:
         #The first sublist is function names and second is local variables.
         #Each function has its own sublist in the second sublist. The index
         #of the sublist of the each function's local variables is the index
-        #of the function name in the first list.
+        #of the function name in the first list
         self.symbol_table = [[], []]
         #This is a variable that keeps track of which function is currently
         #being analysed and allows the parser to efficiently log local variables.
         #It is the index in the symbol table of the current function's table of variables
         self.function_count = -1
 
+    #Fetches the next token if and only if it is the one that is expected. The "current_token"
+    #pointer is incremented so the next token to be accepted is the next sequential token
     def accept(self, token):
         self.line_count = self.tokens[self.current_token][-1]
         if len(self.tokens[self.current_token]) == 3:
@@ -42,6 +44,9 @@ class Parser:
             return True
         return False
 
+
+    #Returns true if and only if the next token to be accepted is the expected one (first argument).
+    #Else returns a syntax error and prints the expected token
     def expect(self, token):
         if self.accept(token):
             return True
@@ -49,6 +54,8 @@ class Parser:
         print(token)
         return False
 
+    #Looks ahead to the next token and returns whether it is the expected one
+    #(first argument) as a boolean
     def look_ahead(self, token):
         next_token = self.tokens[self.current_token][0]
         if len(next_token) == 3:
@@ -62,6 +69,7 @@ class Parser:
                 self.parse_pre_declaration(self.root)
             else:
                 break
+        #Continues parsing functions until at the end of file
         while self.current_token < len(self.tokens) and self.expect("function"):
             self.parse_function_declaration(self.root)
         if self.initial_function not in self.symbol_table[0]:
@@ -173,17 +181,22 @@ class Parser:
             if previous_token_operator:
                 if self.accept("integer_constant"):
                     element_tree.SubElement(expression_node, "integer_constant", value = self.integer_constant)
-                elif self.accept("identifier"): #Either local variable or function call
+                #Either local variable or function call
+                elif self.accept("identifier"):
                     variable_type = self.check_identifier_type()
-                    if variable_type == "functionName": #Function call
+                    #Function call
+                    if variable_type == "functionName":
                         self.expect("(")
                         self.parse_call(expression_node)
+                    #Variable
                     else:
                         element_tree.SubElement(expression_node, variable_type, value = self.identifier)
+                #Handles nested expressions
                 elif self.accept("("):
                     self.parse_expression(expression_node)
                     self.expect(")")
                 else:
+                    #All signify the end of an expression declaration
                     if self.look_ahead(";") or self.look_ahead(")") or self.look_ahead(","):
                         return
                     else:
@@ -197,6 +210,7 @@ class Parser:
                         break
                 if accepted_operator:
                     continue
+                #All signify the end of an expression declaration
                 if self.look_ahead(";") or self.look_ahead(")") or self.look_ahead(","):
                         return
                 else:
@@ -245,6 +259,7 @@ class Parser:
 
     def log_function_name(self):
         function_name = self.identifier
+        #Handles the double declaring of functions and prints an error message
         if function_name not in self.pre_declared_functions and function_name in self.symbol_table[0]:
             print("ERROR: function ({}) declared twice on line {}".format(function_name, self.line_count))
             return False
