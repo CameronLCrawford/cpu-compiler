@@ -49,10 +49,13 @@ class Generator:
         self.generated_assembly.append("@{}:".format(function_name))
         self.function_table = self.symbol_table[1][self.symbol_table[0].index(function_name)]
         self.generated_assembly += ("push bp", "mov bp sp")
+        #Counts the number of local variables and makes space for them on the stack
+        #by subtracting that number of bytes from the stack pointer
+        local_variable_count = 0
         for local_variable in self.function_table:
             if local_variable[1] == "local":
-                #Initialises all local variables to 0
-                self.generated_assembly.append("push 0")
+                local_variable_count += 1
+        self.generated_assembly.append("sp sp {}".format(local_variable_count))
         for function_element in function_node:
             if function_element.tag == "functionBody":
                 self.compile_statements(function_element)
