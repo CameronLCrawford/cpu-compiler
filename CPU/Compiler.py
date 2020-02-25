@@ -4,6 +4,7 @@ from Tokenizer import Tokenizer
 from Parser import Parser
 from Code_generator import Generator
 from Final_assembler import assemble
+from Optimiser import optimise
 
 code = []
 with open("storn_main.stn", "r") as code_file:
@@ -27,5 +28,7 @@ with open("program.txt", 'w') as assembly_file:
     for instruction in assembly:
         assembly_file.write(instruction)
         assembly_file.write("\n")
+
+optimise()
 
 assemble()

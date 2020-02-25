@@ -2,38 +2,34 @@ push c
 pop l
 pop h
 ap h 10
-push h
-push l
+push H
+push L
 jmp @main
 hlt
 @otherFunction:
 push bp
 mov bp sp
-push 0
+sp sp 1
 mphbp
 mov b a
 ap h 6
 mov a b
 mov ar hl
-push a
+push A
 mphbp
 mov b a
 ap h 5
 mov a b
 mov ar hl
-push a
-pop b
+mov B A
 pop a
 sub b
-push a
-pop a
 mphbp
 mov b a
 ap h 4
 mov a b
 mov hl ar
-push 0
-pop a
+ldr A 0
 mphbp
 mov b a
 sp h 1
@@ -45,15 +41,12 @@ mov b a
 sp h 1
 mov a b
 mov ar hl
-push a
-push 5
-pop b
+push A
+ldr B 5
 pop a
 sub b
 sfo
 xor 1
-push a
-pop a
 dec
 jp .L0
 mphbp
@@ -61,13 +54,10 @@ mov b a
 ap h 4
 mov a b
 mov ar hl
-push a
-push 2
-pop b
+push A
+ldr B 2
 pop a
 add b
-push a
-pop a
 mphbp
 mov b a
 ap h 4
@@ -78,13 +68,10 @@ mov b a
 sp h 1
 mov a b
 mov ar hl
-push a
-push 2
-pop b
+push A
+ldr B 2
 pop a
 add b
-push a
-pop a
 mphbp
 mov b a
 sp h 1
@@ -97,28 +84,21 @@ mov b a
 ap h 4
 mov a b
 mov ar hl
-push a
-pop b
-sp sp 0
+mov B A
 mov sp bp
 pop bp
 pop c
 @main:
 push bp
 mov bp sp
-push 0
-push 0
-push 0
-push 0
-push 10
-pop a
+sp sp 4
+ldr A 10
 mphbp
 mov b a
 sp h 1
 mov a b
 mov hl ar
-push 3
-pop a
+ldr A 3
 mphbp
 mov b a
 sp h 2
@@ -129,48 +109,44 @@ mov b a
 sp h 2
 mov a b
 mov ar hl
-push a
+push A
 push 5
 mphbp
 mov b a
 sp h 1
 mov a b
 mov ar hl
-push a
+push A
 push 2
 push c
 pop l
 pop h
 ap h 10
-push h
-push l
+push H
+push L
 jmp @otherFunction
 mov a b
-push a
+push A
 push c
 pop l
 pop h
 ap h 10
-push h
-push l
+push H
+push L
 jmp @myFunction
 mov a b
-push a
-pop a
 mphbp
 mov b a
 sp h 3
 mov a b
 mov hl ar
-push 20
-pop a
+ldr A 20
 mphbp
 mov b a
 sp h 2
 mov a b
 mov hl ar
-push 0
-pop a
+ldr A 0
 mphbp
 mov b a
 sp h 4
@@ -182,15 +158,12 @@ mov b a
 sp h 4
 mov a b
 mov ar hl
-push a
-push 10
-pop b
+push A
+ldr B 10
 pop a
 sub b
 sfo
 xor 1
-push a
-pop a
 dec
 jp .L2
 mphbp
@@ -198,21 +171,16 @@ mov b a
 sp h 3
 mov a b
 mov ar hl
-push a
-pop a
 out
 mphbp
 mov b a
 sp h 4
 mov a b
 mov ar hl
-push a
-push 1
-pop b
+push A
+ldr B 1
 pop a
 add b
-push a
-pop a
 mphbp
 mov b a
 sp h 4
@@ -220,9 +188,7 @@ mov a b
 mov hl ar
 jmp .L3
 .L2:
-push 0
-pop b
-sp sp 0
+ldr B 0
 mov sp bp
 pop bp
 pop c
@@ -234,36 +200,29 @@ mov b a
 ap h 4
 mov a b
 mov ar hl
-push a
-push 9
-pop a
+push A
+ldr A 9
 pop b
 sub b
 sfo
-push a
+push A
 mphbp
 mov b a
 ap h 5
 mov a b
 mov ar hl
-push a
-pop b
+mov B A
 pop a
 or b
-push a
-push 1
-pop a
+push A
+ldr A 1
 pop b
 sub b
 sfo
 xor 1
-push a
-pop a
 dec
 jn .L5
-push 1
-pop b
-sp sp 0
+ldr B 1
 mov sp bp
 pop bp
 pop c
@@ -274,27 +233,20 @@ mov b a
 ap h 5
 mov a b
 mov ar hl
-push a
-push 2
-pop b
+push A
+ldr B 2
 pop a
 sub b
 zfo
-push a
-pop a
 dec
 jn .L6
-push 0
-pop b
-sp sp 0
+ldr B 0
 mov sp bp
 pop bp
 pop c
 jmp .L4
 .L6:
-push 19
-pop b
-sp sp 0
+ldr B 19
 mov sp bp
 pop bp
 pop c
