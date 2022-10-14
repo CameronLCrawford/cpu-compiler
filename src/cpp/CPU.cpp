@@ -1,14 +1,14 @@
-#include "CPU.h"
+#include "CPU.hpp"
 #include <fstream>
 #include <iostream>
 
-CPU::CPU()
+CPU::CPU(std::string instructionPath, std::string programPath)
 {
 	//Sets counter to start address
 	registers[counterHRegister] = 128;
 	registers[stackHRegister] = 8;
 	//Load instruction ROM from file
-	std::ifstream instructionRomFile("instruction_rom.bin", std::ios::binary);
+	std::ifstream instructionRomFile(instructionPath, std::ios::binary);
 	char buffer[4];
 	int value;
 	for (int i = 0; i < 65536; i++)
@@ -17,7 +17,7 @@ CPU::CPU()
 		instructionRom[i] = value;
 	}
 	//Load program from file ROM into RAM
-	std::ifstream programRomFile("program_rom.bin", std::ios::binary);
+	std::ifstream programRomFile(programPath, std::ios::binary);
 	programRomFile.read(ram, 65536);
 }
 

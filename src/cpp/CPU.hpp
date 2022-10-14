@@ -1,5 +1,3 @@
-#pragma once
-
 #include <cstdint>
 #include <bitset>
 
@@ -58,7 +56,7 @@ private:
 	uint8_t microinstructionCounter = 0;
 
 public:
-	CPU();
+	CPU(std::string, std::string);
 	~CPU();
 	void run();
 
