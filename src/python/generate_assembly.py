@@ -12,15 +12,17 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
     #the final node
     current_label = 0
     initial_statement = list(root)[0]
+    initial_function = None
 
     def compile_initial(initial_node):
         nonlocal generated_assembly
+        nonlocal initial_function
         generated_assembly.append("push c")
         #Adds 10 to the pushed program counter so that when it is popped the program execution
         #resumes from the next sequential instruction
         generated_assembly += ("pop l", "pop h", "ap h 10", "push h", "push l")
-        generated_assembly.append("jmp @{}".format(initial_node.get("value")))
-        generated_assembly.append("hlt")
+        initial_function = initial_node.get("value")
+        generated_assembly.append("jmp @{}".format(initial_function))
 
     def compile_function_call(function_node):
         nonlocal generated_assembly
@@ -55,6 +57,8 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
         for function_element in function_node:
             if function_element.tag == "functionBody":
                 compile_statements(function_element)
+        if function_name == initial_function:
+            generated_assembly.append("hlt")
 
     def compile_expression(expression_node):
         nonlocal generated_assembly
