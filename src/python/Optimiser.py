@@ -1,8 +1,9 @@
-registers = ("A, B, H, L")
+import sys
 
-def optimise():
+def optimise(assembly_file):
+    registers = ("A, B, H, L")
     code = []
-    with open("program.txt", 'r') as program_file:
+    with open(assembly_file, 'r') as program_file:
         code = program_file.read().splitlines()
     for i, instruction in enumerate(code):
         code[i] = instruction.split()
@@ -67,10 +68,13 @@ def optimise():
             pushed_register = None
             pushed_integer = None
             optimised_code.append(" ".join(instruction))
-    with open("program.txt", "w") as program_file:
+    with open(assembly_file, "w") as program_file:
         for instruction in optimised_code:
             program_file.write("".join(instruction))
             program_file.write('\n')
 
 if __name__ == "__main__":
-    optimise()
+    if len(sys.argv) != 2:
+        print("ERROR: expected 1 argument")
+    else:
+        compile(sys.argv[1])

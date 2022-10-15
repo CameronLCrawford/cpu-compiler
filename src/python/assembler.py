@@ -1,54 +1,54 @@
-program_rom = [0]*65536
+def assemble(assembly_file, program_rom):
+    program_rom = [0]*65536
 
-opcodes = (
-    "ADD", "SUB", "AND", "OR", "XOR", "INC", "DEC", "NEG", "UNEG", "ADDC", "SUBC", "INCC", "DECC",
-    "MOV", "LDR", "STA", "JMP", "JN", "JP", "JZ", "JNZ", "JE", "JO", "JC", "JNC",
-    "PUSH", "POP", "AP", "SP", "MPHBP", "ZFO", "SFO", "OUT", "HLT"
-)
+    opcodes = (
+        "ADD", "SUB", "AND", "OR", "XOR", "INC", "DEC", "NEG", "UNEG", "ADDC", "SUBC", "INCC", "DECC",
+        "MOV", "LDR", "STA", "JMP", "JN", "JP", "JZ", "JNZ", "JE", "JO", "JC", "JNC",
+        "PUSH", "POP", "AP", "SP", "MPHBP", "ZFO", "SFO", "OUT", "HLT"
+    )
 
-#Defines all assembly instructions that the computer knows
-#so the assembly can easily compile to machine code
-instruction_names = dict(zip(
-["ADD", "ADDA", "ADDB", "ADDH", "ADDL", "ADDM", "ADDI", #ADDITION
-"SUB", "SUBA", "SUBB", "SUBH", "SUBL", "SUBM", "SUBI", #SUBTRACTION
-"AND", "ANDA", "ANDB", "ANDH", "ANDL", "ANDM", "ANDI", #BINARY AND
-"OR", "ORA", "ORB", "ORH", "ORL", "ORM", "ORI", #BINARY OR
-"XOR", "XORA", "XORB", "XORH", "XORL", "XORM", "XORI", #BINARY XOR
-"INC", "DEC", "NEG", "UNEG", #OTHER ALU OPERATIONS
-"ADDC", "ADDCA", "ADDCB", "ADDCH", "ADDCL", "ADDCM", "ADDCI", #ADDITION (CARRY CONDITIONAL)
-"SUBC", "SUBCA", "SUBCB", "SUBCH", "SUBCL", "SUBCM", "SUBCI", #SUBTRACTION (CARRY CONDITIONAL)
-"INCC", "DECC", #INCREMENTATION / DECREMENTATION (CARRY CONDITIONAL)
-"MOVAB", "MOVAH", "MOVAL", #MOVE TO A
-"MOVBA", "MOVBH", "MOVBL", #MOVE TO B
-"MOVHA", "MOVHB", "MOVHL", #MOVE TO H
-"MOVLA", "MOVLB", "MOVLH", #MOVE TO L
-"LDA", "LDAI", "LDAM", "LDB", "LDBI", "LDBM", #LOAD A / B
-"LDH", "LDHI", "LDHM", "LDL", "LDLI", "LDLM", #LOAD H / L
-"STAI", "STAM", #STORE A
-"JMPM", "JMPI", #JUMP (UNCONDITIONAL)
-"JNM", "JNI", "JPM", "JPI", "JZM", "JZI", "JNZM", "JNZI", #JUMP CONDITIONAL
-"JEM", "JEI", "JOM", "JOI", "JCM", "JCI", "JNCM", "JNCI", #JUMP CONDITIONAL
-"PUSH", "PUSHI", "PUSHA", "PUSHB", "PUSHH", "PUSHL", "PUSHS", "PUSHBP", "PUSHC", #PUSH TO STACK
-"POP", "POPA", "POPB", "POPH", "POPL", "POPS", "POPBP", "POPC", #POP FROM STACK
-"LDSPH", "LDSPL", "LDSP", "LDSPHM", "LDSPLM", "LDSPHL", #LOAD STACK POINTER
-"LDBPH", "LDBPL", "LDBP", "LDBPHM", "LDBPLM", "LDBPHL", #LOAD BASE POINTER
-"MOVBPSP", "MOVSPBP", "MARHL", "MHLAR", #MOVE STACK / BASE POINTER
-"MPHSP", "MPHBP", #16 BIT MOVE
-"APHI", "APSPH", "APBPH", "APSPI", "APBPI", #16 BIT ADDITION
-"SPHI", "SPSPH", "SPBPH", "SPSPI", "SPBPI", #16 BIT SUBTRACTION
-"ZFO", "SFO", #FLAG OUT OPERATIONS FOR USE IN COMPARISONS
-"OUT", "HLT"], range(1, 149)))
+    #Defines all assembly instructions that the computer knows
+    #so the assembly can easily compile to machine code
+    instruction_names = dict(zip(
+    ["ADD", "ADDA", "ADDB", "ADDH", "ADDL", "ADDM", "ADDI", #ADDITION
+    "SUB", "SUBA", "SUBB", "SUBH", "SUBL", "SUBM", "SUBI", #SUBTRACTION
+    "AND", "ANDA", "ANDB", "ANDH", "ANDL", "ANDM", "ANDI", #BINARY AND
+    "OR", "ORA", "ORB", "ORH", "ORL", "ORM", "ORI", #BINARY OR
+    "XOR", "XORA", "XORB", "XORH", "XORL", "XORM", "XORI", #BINARY XOR
+    "INC", "DEC", "NEG", "UNEG", #OTHER ALU OPERATIONS
+    "ADDC", "ADDCA", "ADDCB", "ADDCH", "ADDCL", "ADDCM", "ADDCI", #ADDITION (CARRY CONDITIONAL)
+    "SUBC", "SUBCA", "SUBCB", "SUBCH", "SUBCL", "SUBCM", "SUBCI", #SUBTRACTION (CARRY CONDITIONAL)
+    "INCC", "DECC", #INCREMENTATION / DECREMENTATION (CARRY CONDITIONAL)
+    "MOVAB", "MOVAH", "MOVAL", #MOVE TO A
+    "MOVBA", "MOVBH", "MOVBL", #MOVE TO B
+    "MOVHA", "MOVHB", "MOVHL", #MOVE TO H
+    "MOVLA", "MOVLB", "MOVLH", #MOVE TO L
+    "LDA", "LDAI", "LDAM", "LDB", "LDBI", "LDBM", #LOAD A / B
+    "LDH", "LDHI", "LDHM", "LDL", "LDLI", "LDLM", #LOAD H / L
+    "STAI", "STAM", #STORE A
+    "JMPM", "JMPI", #JUMP (UNCONDITIONAL)
+    "JNM", "JNI", "JPM", "JPI", "JZM", "JZI", "JNZM", "JNZI", #JUMP CONDITIONAL
+    "JEM", "JEI", "JOM", "JOI", "JCM", "JCI", "JNCM", "JNCI", #JUMP CONDITIONAL
+    "PUSH", "PUSHI", "PUSHA", "PUSHB", "PUSHH", "PUSHL", "PUSHS", "PUSHBP", "PUSHC", #PUSH TO STACK
+    "POP", "POPA", "POPB", "POPH", "POPL", "POPS", "POPBP", "POPC", #POP FROM STACK
+    "LDSPH", "LDSPL", "LDSP", "LDSPHM", "LDSPLM", "LDSPHL", #LOAD STACK POINTER
+    "LDBPH", "LDBPL", "LDBP", "LDBPHM", "LDBPLM", "LDBPHL", #LOAD BASE POINTER
+    "MOVBPSP", "MOVSPBP", "MARHL", "MHLAR", #MOVE STACK / BASE POINTER
+    "MPHSP", "MPHBP", #16 BIT MOVE
+    "APHI", "APSPH", "APBPH", "APSPI", "APBPI", #16 BIT ADDITION
+    "SPHI", "SPSPH", "SPBPH", "SPSPI", "SPBPI", #16 BIT SUBTRACTION
+    "ZFO", "SFO", #FLAG OUT OPERATIONS FOR USE IN COMPARISONS
+    "OUT", "HLT"], range(1, 149)))
 
-symbol_table = {} #Stores all of the symbols used and their memory locations
-instructions = {} #Stores all instructions and their memory locations
+    symbol_table = {} #Stores all of the symbols used and their memory locations
+    instructions = {} #Stores all instructions and their memory locations
 
-double_immediate_instructions = ("STA", "JMP", "JN", "JP", "JZ", "JNZ", "JE", "JO", "JC", "JNC")
-arithmetic_instructions = ("ADD", "SUB", "AND", "OR", "XOR", "ADDC", "SUBC")
-registers = ("A", "B", "H", "L", "M")
-jump_instructions = ("JMP", "JN", "JP", "JZ", "JNZ", "JE", "JO", "JC", "JNC")
+    double_immediate_instructions = ("STA", "JMP", "JN", "JP", "JZ", "JNZ", "JE", "JO", "JC", "JNC")
+    arithmetic_instructions = ("ADD", "SUB", "AND", "OR", "XOR", "ADDC", "SUBC")
+    registers = ("A", "B", "H", "L", "M")
+    jump_instructions = ("JMP", "JN", "JP", "JZ", "JNZ", "JE", "JO", "JC", "JNC")
 
-def assemble():
-    with open("program.txt", 'r') as program_file:
+    with open(assembly_file, 'r') as program_file:
         code = program_file.read().splitlines()
     for i, instruction in enumerate(code):
         code[i] = instruction.split()
@@ -319,7 +319,7 @@ def assemble():
         if opcode in ("OUT", "HLT", "ZFO", "SFO", "MPHSP", "MPHBP"):
             program_rom[rom_address] = instruction_names[opcode]
 
-    with open("program_rom.bin", 'wb') as rom:
+    with open(program_rom, 'wb') as rom:
         rom.write(bytearray(program_rom))
 
     print("Assembly complete!")
