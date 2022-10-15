@@ -4,9 +4,15 @@
 
 CPU::CPU(std::string instructionPath, std::string programPath)
 {
+	// Initalise RAM
+	ram = new char[65536];
+	// Initialise instruction ROM
+	instructionRom = new uint32_t[65536];
 	//Sets counter to start address
 	registers[counterHRegister] = 128;
 	registers[stackHRegister] = 8;
+	// Initialise microinstruction counter to 0
+	microinstructionCounter = 0;
 	//Load instruction ROM from file
 	std::ifstream instructionRomFile(instructionPath, std::ios::binary);
 	char buffer[4];
