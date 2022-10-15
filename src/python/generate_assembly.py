@@ -11,12 +11,7 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
     #label will be ".L1" then it will be ".Ln" through to ".L0" as 
     #the final node
     current_label = 0
-    initial_statement = root.getchildren()[0]
-
-    compile_initial(initial_statement)
-    for program_element in root.getchildren():
-        if program_element.tag == "functionDeclaration":
-            compile_function(program_element)
+    initial_statement = list(root)[0]
 
     def compile_initial(initial_node):
         nonlocal generated_assembly
@@ -31,7 +26,7 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
         nonlocal generated_assembly
         #Handles all arguments in reverse order so they are accessed with relation
         #to the base pointer correctly
-        for argument in reversed(function_node.getchildren()):
+        for argument in reversed(list(function_node)):
             compile_expression(argument)
         generated_assembly.append("push c")
         #Adds 10 to the pushed program counter so that when it is popped the program execution
@@ -44,6 +39,7 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
 
     def compile_function(function_node):
         nonlocal generated_assembly
+        nonlocal function_table
         function_name = function_node.get("value")
         #Adds the label for that function so it is identifiable and can be jumped to
         generated_assembly.append("@{}:".format(function_name))
@@ -65,7 +61,7 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
         current_element = "term1"
         next_element = "operator"
         operator = None
-        for expression_element in expression_node.getchildren():
+        for expression_element in list(expression_node):
             if current_element in ("term1", "term2"):
                 if expression_element.tag == "expression":
                     compile_expression(expression_element)
@@ -131,7 +127,7 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
             current_element = next_element
     
     def compile_statements(body_node):
-        for statement in body_node.getchildren():
+        for statement in list(body_node):
             if statement.tag == "declarationStatement":
                 compile_declaration(statement)
             elif statement.tag == "ifStatement":
@@ -149,10 +145,10 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
     
     def compile_declaration(declaration_node):
         nonlocal generated_assembly
-        if len(declaration_node.getchildren()) == 1:
+        if len(declaration_node) == 1:
             return
-        variable = declaration_node.getchildren()[0].get("value")
-        compile_expression(declaration_node.getchildren()[1])
+        variable = list(declaration_node)[0].get("value")
+        compile_expression(list(declaration_node)[1])
         #local_count refers to the offset from the base pointer the local variable
         #is. The same applies to argument count and this is 4 as the stack frame for
         #a function is arranged in the way that between the base pointer and the arguments
@@ -180,12 +176,12 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
         nonlocal current_label
         elif_count = 0
         else_present = False
-        for if_child in if_node.getchildren():
+        for if_child in list(if_node):
             if if_child.tag == "elifCondition":
                 elif_count += 1
             elif if_child.tag == "elseBody":
                 else_present = True
-        for i, if_child in enumerate(if_node.getchildren()):
+        for i, if_child in enumerate(list(if_node)):
             if if_child.tag == "ifCondition":
                 final_jump = current_label
                 current_label += 1
@@ -193,10 +189,10 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
                 #Only an if (no elif or else)
                 if else_present == False and elif_count == 0:
                     generated_assembly += ("pop a", "dec", "jn .L{}".format(final_jump))
-                    compile_statements(if_node.getchildren()[i + 1])
+                    compile_statements(list(if_node)[i + 1])
                 else:
                     generated_assembly += ("pop a", "dec", "jn .L{}".format(current_label))
-                    compile_statements(if_node.getchildren()[i + 1])
+                    compile_statements(list(if_node)[i + 1])
                     generated_assembly.append("jmp .L{}".format(final_jump))
             elif if_child.tag == "elifCondition":
                 generated_assembly.append(".L{}:".format(current_label))
@@ -205,14 +201,14 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
                 #If this is the last elif statement jump to the end afterwards
                 if else_present == False and (i/2 == elif_count):
                     generated_assembly += ("pop a", "dec", "jn .L{}".format(final_jump))
-                    compile_statements(if_node.getchildren()[i + 1])
+                    compile_statements(list(if_node)[i + 1])
                 else:
                     generated_assembly += ("pop a", "dec", "jn .L{}".format(current_label))
-                    compile_statements(if_node.getchildren()[i + 1])
+                    compile_statements(list(if_node)[i + 1])
                     generated_assembly.append("jmp .L{}".format(final_jump))
             elif if_child.tag == "elseBody":
                 generated_assembly.append(".L{}:".format(current_label))
-                compile_statements(if_node.getchildren()[i])
+                compile_statements(list(if_node)[i])
         generated_assembly.append(".L{}:".format(final_jump))
 
     def compile_while(while_node):
@@ -222,16 +218,16 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
         current_label += 1
         generated_assembly.append(".L{}:".format(current_label))
         current_label += 1
-        compile_expression(while_node.getchildren()[0][0])
+        compile_expression(list(while_node)[0][0])
         generated_assembly += ("pop a", "dec", "jn .L{}".format(final_jump))
-        compile_statements(while_node.getchildren()[1])
+        compile_statements(list(while_node)[1])
         generated_assembly.append("jmp .L{}".format(current_label - 1))
         generated_assembly.append(".L{}:".format(final_jump))
         
     def compile_for(for_node):
         nonlocal generated_assembly
         nonlocal current_label
-        for_node_children = for_node.getchildren()
+        for_node_children = list(for_node)
         final_jump = current_label
         current_label += 1
         variable = for_node_children[0].get("value")
@@ -269,7 +265,7 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
         
     def compile_assignment(assigment_node):
         nonlocal generated_assembly
-        compile_expression(assigment_node.getchildren()[1])
+        compile_expression(list(assigment_node)[1])
         #local_count refers to the offset from the base pointer the local variable
         #is. The same applies to argument count and this is 4 as the stack frame for
         #a function is arranged in the way that between the base pointer and the arguments
@@ -294,13 +290,13 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
 
     def compile_output(output_node):
         nonlocal generated_assembly
-        compile_expression(output_node.getchildren()[0])
+        compile_expression(list(output_node)[0])
         generated_assembly += ("pop a", "out")
 
     def compile_return(return_node):
         nonlocal generated_assembly
         #Compiles the expression and leaves the value in the B register
-        compile_expression(return_node.getchildren()[0])
+        compile_expression(list(return_node)[0])
         generated_assembly.append("pop b")
         local_variable_count = 0
         for variable in function_table:
@@ -311,5 +307,10 @@ def generate_assembly(abstract_syntax_tree, symbol_table):
         generated_assembly.append("sp sp {}".format(local_variable_count))
         #Cleans up the stack frame
         generated_assembly += ("mov sp bp", "pop bp", "pop c")
+
+    compile_initial(initial_statement)
+    for program_element in list(root):
+        if program_element.tag == "functionDeclaration":
+            compile_function(program_element)
 
     return generated_assembly

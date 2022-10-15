@@ -1,2 +1,3 @@
-out/*
-.vscode/*
+out/
+.vscode/
+src/python/__pycache__

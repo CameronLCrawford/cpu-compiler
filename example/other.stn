@@ -1,0 +1,10 @@
+initial main;
+
+function main() {
+    var x = 10;
+    var y = 20;
+    while(y == 20) {
+        output(x);
+        x = x + 1;
+    }
+}

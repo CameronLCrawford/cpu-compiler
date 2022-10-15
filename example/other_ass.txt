@@ -1,0 +1,59 @@
+push c
+pop l
+pop h
+ap h 10
+push H
+push L
+jmp @main
+hlt
+@main:
+push bp
+mov bp sp
+sp sp 2
+ldr A 10
+mphbp
+mov b a
+sp h 1
+mov a b
+mov hl ar
+ldr A 20
+mphbp
+mov b a
+sp h 2
+mov a b
+mov hl ar
+.L1:
+mphbp
+mov b a
+sp h 2
+mov a b
+mov ar hl
+push A
+ldr B 20
+pop a
+sub b
+zfo
+dec
+jn .L0
+mphbp
+mov b a
+sp h 1
+mov a b
+mov ar hl
+out
+mphbp
+mov b a
+sp h 1
+mov a b
+mov ar hl
+push A
+ldr B 1
+pop a
+add b
+mphbp
+mov b a
+sp h 1
+mov a b
+mov hl ar
+jmp .L1
+.L0:

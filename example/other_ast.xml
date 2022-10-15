@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<program>
+    <initialStatement value="main"/>
+    <functionDeclaration value="main">
+        <functionBody>
+            <declarationStatement>
+                <localVariable value="x"/>
+                <expression>
+                    <integer_constant value="10"/>
+                </expression>
+            </declarationStatement>
+            <declarationStatement>
+                <localVariable value="y"/>
+                <expression>
+                    <integer_constant value="20"/>
+                </expression>
+            </declarationStatement>
+            <whileStatement>
+                <whileCondition>
+                    <expression>
+                        <localVariable value="y"/>
+                        <operator value="=="/>
+                        <integer_constant value="20"/>
+                    </expression>
+                </whileCondition>
+                <whileBody>
+                    <outputStatement>
+                        <expression>
+                            <localVariable value="x"/>
+                        </expression>
+                    </outputStatement>
+                    <assignmentStatement>
+                        <localVariable value="x"/>
+                        <expression>
+                            <localVariable value="x"/>
+                            <operator value="+"/>
+                            <integer_constant value="1"/>
+                        </expression>
+                    </assignmentStatement>
+                </whileBody>
+            </whileStatement>
+        </functionBody>
+    </functionDeclaration>
+</program>

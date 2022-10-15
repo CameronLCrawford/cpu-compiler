@@ -18,6 +18,32 @@ def tokenise(storn):
     identifier = ""
     line_count = 1
 
+    def add_token(token):
+        nonlocal integer_literal
+        nonlocal generated_tokens
+        nonlocal identifier
+        if integer_literal != "":
+            generated_tokens.append(("integer_constant", integer_literal, line_count))
+            integer_literal = ""
+        if identifier != "":
+            if identifier in valid_tokens:
+                generated_tokens.append((identifier, line_count))
+            else:
+                generated_tokens.append(("identifier", identifier, line_count))
+            identifier = ""
+        generated_tokens.append((token, line_count))
+
+    def isValidFirstChar(character):
+        ascii_value = ord(character)
+        return (ascii_value >= 65 and ascii_value <= 90) or (ascii_value >= 97 and ascii_value <= 122) or character == "_"
+
+    def isValidChar(character):
+        try:
+            int(character)
+            return True
+        except ValueError:
+            return isValidFirstChar(character)
+
     i = 0
     while i < len(code): #Main loop of the tokenizer
         character = code[i]
@@ -94,28 +120,5 @@ def tokenise(storn):
             elif identifier != "" and isValidChar(character):
                 identifier += character
             i += 1
-
-    def add_token(token):
-        if integer_literal != "":
-            generated_tokens.append(("integer_constant", integer_literal, line_count))
-            integer_literal = ""
-        if identifier != "":
-            if identifier in valid_tokens:
-                generated_tokens.append((identifier, line_count))
-            else:
-                generated_tokens.append(("identifier", identifier, line_count))
-            identifier = ""
-        generated_tokens.append((token, line_count))
-
-    def isValidFirstChar(character):
-        ascii_value = ord(character)
-        return (ascii_value >= 65 and ascii_value <= 90) or (ascii_value >= 97 and ascii_value <= 122) or character == "_"
-
-    def isValidChar(character):
-        try:
-            int(character)
-            return True
-        except ValueError:
-            return isValidFirstChar(character)
 
     return generated_tokens

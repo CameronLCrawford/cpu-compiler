@@ -24,24 +24,11 @@ def parse(tokens):
     #It is the index in the symbol table of the current function's table of variables
     function_count = -1
 
-    parse_initial(root)
-    while True:
-        if accept("declare"):
-            parse_pre_declaration(root)
-        else:
-            break
-    #Continues parsing functions until at the end of file
-    while current_token < len(tokens) and expect("function"):
-        parse_function_declaration(root)
-    if initial_function not in symbol_table[0]:
-        print("ERROR: initial function not found.")
-
-    #Fetches the next token if and only if it is the one that is expected. The "current_token"
-    #pointer is incremented so the next token to be accepted is the next sequential token
     def accept(token):
         nonlocal line_count
         nonlocal identifier
         nonlocal integer_constant
+        nonlocal current_token
         line_count = tokens[current_token][-1]
         if len(tokens[current_token]) == 3:
             if tokens[current_token][0] == token:
@@ -260,6 +247,7 @@ def parse(tokens):
 
     def log_function_name():
         nonlocal function_count
+        nonlocal symbol_table
         function_name = identifier
         #Handles the double declaring of functions and prints an error message
         if function_name not in pre_declared_functions and function_name in symbol_table[0]:
@@ -274,6 +262,7 @@ def parse(tokens):
             symbol_table[1].append([])
  
     def log_local_variable(variable_type):
+        nonlocal symbol_table
         local_variable = identifier
         if local_variable in symbol_table[1][function_count]:
             print("ERROR: variable declared more than once in function on line {}.".format(line_count))
@@ -284,19 +273,35 @@ def parse(tokens):
         symbol_table[1][function_count].append((local_variable, variable_type))
 
     def log_pre_declaration():
+        nonlocal symbol_table
         pre_declared_functions.append(identifier)
         symbol_table[0].append(identifier)
         symbol_table[1].append([])
         function_count += 1
 
     def check_identifier_type():
-        identifier = identifier
+        nonlocal identifier
         if identifier in symbol_table[0] or identifier in pre_declared_functions:
             return "functionName"
         for function_table in symbol_table[1]:
-            for identifier in function_table:
-                if identifier[0] == identifier:
+            for stored_identifier in function_table:
+                if stored_identifier[0] == identifier:
                     return "localVariable"
         print("ERROR: unidentified identifier on line {}.".format(line_count))
+
+    parse_initial(root)
+    while True:
+        if accept("declare"):
+            parse_pre_declaration(root)
+        else:
+            break
+    #Continues parsing functions until at the end of file
+    while current_token < len(tokens) and expect("function"):
+        parse_function_declaration(root)
+    if initial_function not in symbol_table[0]:
+        print("ERROR: initial function not found.")
+
+    #Fetches the next token if and only if it is the one that is expected. The "current_token"
+    #pointer is incremented so the next token to be accepted is the next sequential token
 
     return (root, symbol_table)

@@ -1,4 +1,4 @@
-def assemble(assembly_file, program_rom):
+def assemble(assembly_file, rom_file):
     program_rom = [0]*65536
 
     opcodes = (
@@ -319,11 +319,10 @@ def assemble(assembly_file, program_rom):
         if opcode in ("OUT", "HLT", "ZFO", "SFO", "MPHSP", "MPHBP"):
             program_rom[rom_address] = instruction_names[opcode]
 
-    with open(program_rom, 'wb') as rom:
+    with open(rom_file, 'wb') as rom:
         rom.write(bytearray(program_rom))
 
     print("Assembly complete!")
-    print("Assembled Machine Code:\n{}\n".format(program_rom[32768:instruction_count]))
     end = input("Press <ENTER> to quit")
     quit()
 

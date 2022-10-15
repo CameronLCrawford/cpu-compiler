@@ -26,10 +26,10 @@ def compile(storn_file, xml_file, assembly_file, program_rom):
 
     # Generate, write, and optimise assembly
     assembly = generate_assembly(parsed, symbol_table)
-    with open(assembly_file, 'w') as assembly_file:
+    with open(assembly_file, 'w') as file:
         for instruction in assembly:
-            assembly_file.write(instruction)
-            assembly_file.write("\n")
+            file.write(instruction)
+            file.write("\n")
     optimise(assembly_file)
 
     # Finally, generate machine code
