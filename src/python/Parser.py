@@ -274,6 +274,7 @@ def parse(tokens):
 
     def log_pre_declaration():
         nonlocal symbol_table
+        nonlocal function_count
         pre_declared_functions.append(identifier)
         symbol_table[0].append(identifier)
         symbol_table[1].append([])
@@ -292,7 +293,7 @@ def parse(tokens):
     parse_initial(root)
     while True:
         if accept("declare"):
-            parse_pre_declaration(root)
+            parse_pre_declaration()
         else:
             break
     #Continues parsing functions until at the end of file
