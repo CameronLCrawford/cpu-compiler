@@ -193,7 +193,7 @@ def generate_rom(instruction_rom_bin):
 
     for flags_int in range(8):
         #converts all numbers from 0 to 7 to their 3-bit binary equivilants
-        #eg. 4 = ['0','1','0','0']
+        #eg. 4 = ['1','0','0']
         flags = list(bin(flags_int)[2:].zfill(4))
         #Converts the list of strings to a list of booleans
         for i in range(3):
@@ -202,27 +202,26 @@ def generate_rom(instruction_rom_bin):
         #ROM with jump instructions if the correct flag conditions are met
         for i, instruction in enumerate(final_instructions[40:46]):
             i += 40
-            for which_jump, jump_instruction in enumerate(jump_immediate):
-                for j, operation in enumerate(jump_instruction):
-                    address = (flags_int << 12) | (i << 4) | j # TODO: check this
-                    #Jump if negative immediate
-                    if i == 40 and flags[0] and which_jump:
-                        rom[address] = jump_immediate[j]
-                    #Jump if positive immediate
-                    if i == 41 and not flags[0] and which_jump:
-                        rom[address] = jump_immediate[j]
-                    #Jump if zero immediate
-                    if i == 42 and flags[1] and which_jump:
-                        rom[address] = jump_immediate[j]
-                    #Jump if not zero immediate
-                    if i == 43 and not flags[1] and which_jump:
-                        rom[address] = jump_immediate[j]
-                    #Jump if carry immediate
-                    if i == 44 and flags[2] and which_jump:
-                        rom[address] = jump_immediate[j]
-                    #Jump if no carry immediate
-                    if i == 45 and not flags[2] and which_jump:
-                        rom[address] = jump_immediate[j]
+            for j, operation in enumerate(jump_immediate):
+                address = (flags_int << 12) | (i << 4) | j # TODO: check this
+                #Jump if negative immediate
+                if i == 40 and flags[0]:
+                    rom[address] = jump_immediate[j]
+                #Jump if positive immediate
+                if i == 41 and not flags[0]:
+                    rom[address] = jump_immediate[j]
+                #Jump if zero immediate
+                if i == 42 and flags[1]:
+                    rom[address] = jump_immediate[j]
+                #Jump if not zero immediate
+                if i == 43 and not flags[1]:
+                    rom[address] = jump_immediate[j]
+                #Jump if carry immediate
+                if i == 44 and flags[2]:
+                    rom[address] = jump_immediate[j]
+                #Jump if no carry immediate
+                if i == 45 and not flags[2]:
+                    rom[address] = jump_immediate[j]
 
     file_byte_array = []
 
