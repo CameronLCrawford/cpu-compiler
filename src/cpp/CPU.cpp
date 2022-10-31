@@ -118,7 +118,7 @@ void CPU::controlTick()
 		dataBus = ram[globalRamAddress];
 	}
 
-	/* The following three instructions can be seen as a hardware implementation
+	/* The following two instructions can be seen as a hardware implementation
 	that will copy the values of both 8-bit registers when the signal is high. */
 	if (controlLines[moveCounterAddress])
 	{
@@ -129,11 +129,6 @@ void CPU::controlTick()
 	{
 		registers[addressHRegister] = registers[stackHRegister];
 		registers[addressLRegister] = registers[stackLRegister];
-	}
-	if (controlLines[moveHLAddressAccumulator])
-	{
-		registers[addressHRegister] = registers[hRegister];
-		registers[addressLRegister] = registers[lRegister];
 	}
 
 	microinstructionCounter++;

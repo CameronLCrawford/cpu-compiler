@@ -15,7 +15,7 @@ private:
 		outControl0, outControl1, outControl2, outControl3,
 		aluControl0, aluControl1, aluControl2, aluControl3,
 		counterIncrement, addressIncrement, stackIncrement, stackDecrement,
-		moveCounterAddress, moveStackAddress, moveHLAddressAccumulator,
+		moveCounterAddress, moveStackAddress,
 		zeroFlagOut, signFlagOut,
 		ramIn, ramOut, resetMicroTick, out, halt
 	};
