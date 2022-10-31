@@ -5,7 +5,7 @@
 CPU::CPU(std::string instructionPath, std::string programPath)
 {
 	// Initalise RAM
-	ram = new char[65536];
+	ram = new uint8_t[65536];
 	// Initialise instruction ROM
 	instructionRom = new uint32_t[65536];
 	//Sets counter to start address
@@ -24,7 +24,7 @@ CPU::CPU(std::string instructionPath, std::string programPath)
 	}
 	//Load program from file ROM into RAM
 	std::ifstream programRomFile(programPath, std::ios::binary);
-	programRomFile.read(ram, 65536);
+	programRomFile.read((char *)ram, 65536);
 }
 
 CPU::~CPU()
@@ -35,16 +35,11 @@ void CPU::run()
 {
 	while (controlLines[halt] == false)
 	{
-		tick();
+		controlTick();
+		programTick();
 	}
 	std::cout << "Program execution halted. Press <ENTER> to quit\n";
 	std::cin.get();
-}
-
-void CPU::tick()
-{
-	controlTick();
-	programTick();
 }
 
 void CPU::controlTick()
@@ -55,6 +50,8 @@ void CPU::controlTick()
 	std::bitset<32> instruction = instructionRom[instructionAddress];
 	controlLines = instruction;
 	tickALU();
+
+	// 16-bt register increment instructions
 	if (controlLines[counterIncrement])
 	{
 		uint16_t counterAddress = (registers[counterHRegister] << 8) | registers[counterLRegister];
@@ -83,6 +80,8 @@ void CPU::controlTick()
 		registers[stackHRegister] = stackAddress >> 8;
 		registers[stackLRegister] = stackAddress;
 	}
+
+	// Flag outs
 	if (controlLines[zeroFlagOut])
 	{
 		dataBus = (int)flags[zero];
@@ -91,6 +90,7 @@ void CPU::controlTick()
 	{
 		dataBus = (int)flags[sign];
 	}
+
 	//Sets the data bus according to the 4-bit output control word which dictates which
 	//registers output their data onto the bus
 	std::bitset<4> controlWord;
@@ -117,6 +117,9 @@ void CPU::controlTick()
 		globalRamAddress = (registers[addressHRegister] << 8) | registers[addressLRegister];
 		dataBus = ram[globalRamAddress];
 	}
+
+	/* The following three instructions can be seen as a hardware implementation
+	that will copy the values of both 8-bit registers when the signal is high. */
 	if (controlLines[moveCounterAddress])
 	{
 		registers[addressHRegister] = registers[counterHRegister];
@@ -132,18 +135,20 @@ void CPU::controlTick()
 		registers[addressHRegister] = registers[hRegister];
 		registers[addressLRegister] = registers[lRegister];
 	}
+
 	microinstructionCounter++;
 }
 
 void CPU::programTick()
 {
+	// Reset
 	if (controlLines[resetMicroTick])
 	{
 		microinstructionCounter = 0;
 	}
 
-	//Sets the registers according to the 4-bit output control word which dictates which
-	//registers read in their data from the bus
+	/* Sets the registers according to the 4-bit output control word which dictates which
+	registers read in their data from the bus */
 	std::bitset<4> controlWord;
 	controlWord[0] = controlLines[inControl0];
 	controlWord[1] = controlLines[inControl1];
@@ -153,6 +158,7 @@ void CPU::programTick()
 	//Converts the control word to an integer between 0 and 15
 	std::uint8_t controlValue = controlWord.to_ulong();
 
+	// Set flag status register
 	if (controlValue > 0 && controlValue < 15)
 	{
 		registers[controlValue - 1] = dataBus;
@@ -161,11 +167,15 @@ void CPU::programTick()
 	{
 		flags = dataBus;
 	}
+
+	// Output from bus
 	if (controlLines[out])
 	{
 		registers[outputRegister] = dataBus;
 		std::cout << "Output: " << (int)registers[outputRegister] << '\n';
 	}
+
+	// Read into memory
 	if (controlLines[ramIn])
 	{
 		uint16_t globalRamAddress;
@@ -176,6 +186,8 @@ void CPU::programTick()
 
 void CPU::tickALU()
 {
+	/* Sets the registers according to the 4-bit output control word which dictates which
+	arithmetic/logic operation to perform */
 	std::bitset<4> controlWord;
 	controlWord[0] = controlLines[aluControl0];
 	controlWord[1] = controlLines[aluControl1];
@@ -185,35 +197,35 @@ void CPU::tickALU()
 	//Converts the control word to an integer between 0 and 15
 	std::uint8_t controlValue = controlWord.to_ulong();
 
+	// No ALU operation performed
 	if (controlValue == 0)
 	{
 		return;
 	}
 
+	// Temporary copies of both registers
 	uint8_t aRegisterValue = registers[aRegister];
 	uint8_t aTempRegisterValue = registers[aTempRegister];
 
 	switch (controlValue)
 	{
-	case 0: //Do nothing with ALU
-		break;
-	case 1: //Add
+	case 1: // Add
 		aluOutput = aRegisterValue + aTempRegisterValue;
 		flags[carry] = aRegisterValue + aTempRegisterValue > 255;
 		updateFlags();
 		break;
-	case 2: //Subtract
+	case 2: // Subtract
 		aluOutput = aRegisterValue - aTempRegisterValue;
 		flags[carry] = aTempRegisterValue > aRegisterValue;
 		updateFlags();
 		break;
-	case 3: //Binary AND
+	case 3: // Binary AND
 		aluOutput = aRegisterValue & aTempRegisterValue;
 		break;
-	case 4: //Binary OR
+	case 4: // Binary OR
 		aluOutput = aRegisterValue | aTempRegisterValue;
 		break;
-	case 5: //Binary XOR
+	case 5: // Binary XOR
 		aluOutput = aRegisterValue ^ aTempRegisterValue;
 		break;
 	case 6: //Increment A
@@ -226,60 +238,10 @@ void CPU::tickALU()
 		flags[carry] = aluOutput == 255;
 		updateFlags();
 		break;
-	case 8: //Negates A register
+	case 8: // Logical negate
 		aluOutput = !aRegisterValue;
 		break;
-	case 9: //Add carry conditional
-		if (flags[carry])
-		{
-			aluOutput = aRegisterValue + aTempRegisterValue + 1;
-			flags[carry] = aRegisterValue + aTempRegisterValue + 1 > 255;
-		}
-		else
-		{
-			aluOutput = aRegisterValue + aTempRegisterValue;
-			flags[carry] = aRegisterValue + aTempRegisterValue > 255;
-		}
-		updateFlags();
-		break;
-	case 10: //Subtract carry conditional
-		if (flags[carry])
-		{
-			aluOutput = aRegisterValue - aTempRegisterValue - 1;
-			flags[carry] = aRegisterValue - aTempRegisterValue - 1 < 0;
-		}
-		else
-		{
-			aluOutput = aRegisterValue - aTempRegisterValue;
-			flags[carry] = aTempRegisterValue > aRegisterValue;
-		}
-		updateFlags();
-		break;
-	case 11: //Increment A carry conditional
-		if (flags[carry])
-		{
-			aluOutput = aRegisterValue + 1;
-		}
-		else
-		{
-			aluOutput = aRegisterValue;
-		}
-		flags[carry] = aluOutput == 0;
-		updateFlags();
-		break;
-	case 12: //Decrement A carry conditional
-		if (flags[carry])
-		{
-			aluOutput = aRegisterValue - 1;
-		}
-		else
-		{
-			aluOutput = aRegisterValue;
-		}
-		flags[carry] = aluOutput == 255;
-		updateFlags();
-		break;
-	case 13: //Unary negate on A
+	case 9: // Arithmetic negate on A
 		aluOutput = -aRegisterValue;
 		break;
 	}
@@ -292,6 +254,4 @@ void CPU::updateFlags()
 	flags[sign] = aluOutput >> 7;
 	//Checks if the result is zero
 	flags[zero] = aluOutput == 0;
-	//Checks if the result is even
-	flags[parity] = aluOutput % 2;
 }

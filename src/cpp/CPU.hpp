@@ -32,19 +32,19 @@ private:
 	};
 
 	//A register that stores the flags from the ALU
-	std::bitset<4> flags;
+	std::bitset<3> flags;
 
 	//Used to more easily address the flags
 	enum flagTypes
 	{
-		carry, parity, zero, sign
+		carry, zero, sign
 	};
 
 	//Internal data bus
 	uint8_t dataBus;
 
 	//64K array of heap allocated 8 bit words representing RAM
-	char* ram;
+	uint8_t* ram;
 
 	//ROM which holds the instruction lookup table used in decoding instructions
 	uint32_t* instructionRom;
@@ -61,7 +61,6 @@ public:
 	void run();
 
 private:
-	void tick();
 	void controlTick();
 	void programTick();
 	void tickALU();
